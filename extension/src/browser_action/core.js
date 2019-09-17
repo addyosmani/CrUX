@@ -1,6 +1,7 @@
 const API_KEY = 'AIzaSyCorXZgoGduhFmi18X2W77zNultjh7O2xI';
 const API_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?';
 let encodedUrl = '';
+let currentTab = 0;
 
 function fetchReportForTab() {
     chrome.tabs.query({
@@ -11,6 +12,11 @@ function fetchReportForTab() {
         console.log(`Active tab URL is ${url}`);
         encodedUrl = encodeURIComponent(url);
         fetchAPIResults(encodedUrl);
+        currentTab = tabs[0].id;
+        chrome.browserAction.setBadgeText({
+            text: '',
+            tabId: currentTab
+        });
         // TODO: Show a loading state?
     });
 }
@@ -39,9 +45,11 @@ function processResults(result) {
     const fcp_template = buildDistributionTemplate(fcp, 'First Contentful Paint (FCP)');
     const fid_template = buildDistributionTemplate(fid, 'First Input Delay (FID)');
     const link_template = buildPSILink();
-    const tmpl = `${fcp_template} ${fid_template} ${link_template}`;
+    const tmpl = `<h1>Origin Performance (${overall_category})</h1> ${fcp_template} ${fid_template} ${link_template}`;
     const el = document.getElementById('report');
     el.innerHTML = tmpl;
+
+    updateBadgeColor(overall_category);
 
 }
 
@@ -51,7 +59,7 @@ function buildDistributionTemplate(metric, label) {
       <div class="lh-metric">
         <div class="field-metric ${metric.category.toLowerCase()} lh-metric__innerwrap">
           <span class="metric-description">${label}: ${metric.category.toLowerCase()}</span>
-          <div hidden class="metric-value lh-metric__value">${metric.category.toLowerCase()}</div></div>
+          <div class="metric-value lh-metric__value">${metric.percentile}</div></div>
         <div class="metric-chart">
           <div class="bar fast" style="flex-grow: 
           ${Math.floor(metric.distributions[0].proportion * 100)};">
@@ -68,7 +76,27 @@ function buildDistributionTemplate(metric, label) {
 }
 
 function buildPSILink() {
-    return `<br><a href='https://developers.google.com/speed/pagespeed/insights/?url=${encodedUrl}' target='_blank'>click to view detailed analysis</a>`;
+    return `<br><a href='https://developers.google.com/speed/pagespeed/insights/?url=${encodedUrl}' target='_blank'>PageSpeed Insights</a>`;
+}
+
+function updateBadgeColor(overall_category) {
+    chrome.browserAction.setBadgeText({ text: overall_category, tabId: currentTab });
+    // Adjust badging
+    switch (overall_category) {
+        case 'SLOW':
+            chrome.browserAction.setBadgeBackgroundColor({ color: "red", tabId: currentTab });
+            break;
+        case 'AVERAGE':
+            chrome.browserAction.setBadgeBackgroundColor({ color: "orange", tabId: currentTab });
+            break;
+        case 'FAST':
+            chrome.browserAction.setBadgeBackgroundColor({ color: "green", tabId: currentTab });
+            break;
+        default:
+            chrome.browserAction.setBadgeBackgroundColor({ color: "white", tabId: currentTab });
+            chrome.browserAction.setBadgeText({ text: '', tabId: currentTab });
+            break;
+    }
 }
 
 window.addEventListener('load', () => {
