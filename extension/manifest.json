@@ -20,16 +20,22 @@
     "default_popup": "src/browser_action/browser_action.html"
   },
   "permissions": [
-    "tabs"
+    "tabs",
+    "http://localhost/",
+    "http://*/*",
+    "https://*/*",
+    "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://www.google.com/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "src/inject/inject.js"
       ]
     }
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://www.googleapis.com; object-src 'self'"
 }
