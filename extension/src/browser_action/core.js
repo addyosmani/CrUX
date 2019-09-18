@@ -29,8 +29,8 @@ async function fetchAPIResults(url) {
     const queryURL = API_URL + query;
 
     console.log(`Fetching PSI results from ${queryURL}`);
-    const response = await fetch('test.json');
-    //const response = await fetch(queryURL);
+    // const response = await fetch('test.json');
+    const response = await fetch(queryURL);
     const json = await response.json();
     console.log(`Response from PSI was ${json}`);
     processResults(json);
@@ -50,7 +50,7 @@ function processResults(result) {
     const el = document.getElementById('report');
     el.innerHTML = tmpl;
 
-    updateBadgeColor(overall_category);
+    updateBadgeIcon(overall_category);
 
 }
 
@@ -96,6 +96,40 @@ function updateBadgeColor(overall_category) {
         default:
             chrome.browserAction.setBadgeBackgroundColor({ color: "white", tabId: currentTab });
             chrome.browserAction.setBadgeText({ text: '', tabId: currentTab });
+            break;
+    }
+}
+
+function updateBadgeIcon(overall_category) {
+    chrome.browserAction.setIcon({
+        path: '../../icons/default128w.png',
+        tabId: currentTab
+    });
+    // Adjust badging
+    switch (overall_category) {
+        case 'SLOW':
+            chrome.browserAction.setIcon({
+                path: '../../icons/slow128w.png',
+                tabId: currentTab
+            });
+            break;
+        case 'AVERAGE':
+            chrome.browserAction.setIcon({
+                path: '../../icons/average128w.png',
+                tabId: currentTab
+            });
+            break;
+        case 'FAST':
+            chrome.browserAction.setIcon({
+                path: '../../icons/fast128w.png',
+                tabId: currentTab
+            });
+            break;
+        default:
+            chrome.browserAction.setIcon({
+                path: '../../icons/default128w.png',
+                tabId: currentTab
+            });
             break;
     }
 }
