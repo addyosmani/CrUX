@@ -29,7 +29,8 @@ async function fetchAPIResults(url) {
     const queryURL = API_URL + query;
 
     console.log(`Fetching PSI results from ${queryURL}`);
-    const response = await fetch(queryURL);
+    const response = await fetch('test.json');
+    //const response = await fetch(queryURL);
     const json = await response.json();
     console.log(`Response from PSI was ${json}`);
     processResults(json);
@@ -58,7 +59,7 @@ function buildDistributionTemplate(metric, label) {
     <div class="metric-wrapper lh-column">
       <div class="lh-metric">
         <div class="field-metric ${metric.category.toLowerCase()} lh-metric__innerwrap">
-          <span class="metric-description">${label}: ${metric.category.toLowerCase()}</span>
+          <span class="metric-description">${label}</span>
           <div class="metric-value lh-metric__value">${formatDisplayValue(label, metric.percentile)}</div></div>
         <div class="metric-chart">
           <div class="bar fast" style="flex-grow: 
@@ -67,7 +68,7 @@ function buildDistributionTemplate(metric, label) {
           <div class="bar average" style="flex-grow: 
           ${Math.floor(metric.distributions[1].proportion * 100)};">
           ${Math.floor(metric.distributions[1].proportion * 100)}%</div>
-          <div class="bar slow" style="margin-left:-10px;flex-grow: 
+          <div class="bar slow" style="flex-grow: 
           ${Math.floor(metric.distributions[2].proportion * 100)};">
           ${Math.floor(metric.distributions[2].proportion * 100)}%</div>
         </div></div>
@@ -76,7 +77,7 @@ function buildDistributionTemplate(metric, label) {
 }
 
 function buildPSILink() {
-    return `<br><a href='https://developers.google.com/speed/pagespeed/insights/?url=${encodedUrl}' target='_blank'>PageSpeed Insights</a>`;
+    return `<br><a href='https://developers.google.com/speed/pagespeed/insights/?url=${encodedUrl}' target='_blank'>View Report on PageSpeed Insights</a>`;
 }
 
 function updateBadgeColor(overall_category) {
