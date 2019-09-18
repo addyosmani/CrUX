@@ -59,7 +59,7 @@ function buildDistributionTemplate(metric, label) {
       <div class="lh-metric">
         <div class="field-metric ${metric.category.toLowerCase()} lh-metric__innerwrap">
           <span class="metric-description">${label}: ${metric.category.toLowerCase()}</span>
-          <div class="metric-value lh-metric__value">${metric.percentile}</div></div>
+          <div class="metric-value lh-metric__value">${formatDisplayValue(label, metric.percentile)}</div></div>
         <div class="metric-chart">
           <div class="bar fast" style="flex-grow: 
           ${Math.floor(metric.distributions[0].proportion * 100)};">
@@ -98,6 +98,17 @@ function updateBadgeColor(overall_category) {
             break;
     }
 }
+
+function formatDisplayValue(metricName, metricValueMs) {
+    if (metricValueMs === undefined) {
+        return null;
+    }
+    if (metricName === 'First Input Delay (FID)') {
+        return Number(metricValueMs.toFixed(0)) + ' ms';
+    } else {
+        return Number((metricValueMs / 1000).toFixed(1)) + ' s';
+    }
+};
 
 window.addEventListener('load', () => {
     fetchReportForTab();
