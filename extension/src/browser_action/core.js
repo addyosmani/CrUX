@@ -1,4 +1,3 @@
-const API_KEY = 'AIzaSyCorXZgoGduhFmi18X2W77zNultjh7O2xI';
 const API_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?';
 let encodedUrl = '';
 let currentTab = 0;
@@ -23,17 +22,22 @@ function fetchReportForTab() {
 
 async function fetchAPIResults(url) {
     const query = [
-        'url=url%3A' + url,
-        'key=' + API_KEY,
+        'url=url%3A' + url
+        // 'key=' + API_KEY,
     ].join('&');
     const queryURL = API_URL + query;
 
     console.log(`Fetching PSI results from ${queryURL}`);
     // const response = await fetch('test.json');
-    const response = await fetch(queryURL);
-    const json = await response.json();
-    console.log(`Response from PSI was ${json}`);
-    processResults(json);
+    try {
+        const response = await fetch(queryURL);
+        const json = await response.json();
+        console.log(`Response from PSI was ${json}`);
+        processResults(json);
+    } catch (err) {
+        const el = document.getElementById('report');
+        el.innerHTML = `We were unable to process your request.`;
+    }
 }
 
 function processResults(result) {
@@ -51,7 +55,6 @@ function processResults(result) {
     el.innerHTML = tmpl;
 
     updateBadgeIcon(overall_category);
-
 }
 
 function buildDistributionTemplate(metric, label) {
